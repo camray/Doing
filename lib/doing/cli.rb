@@ -2,9 +2,9 @@ require 'thor'
 
 module Doing
   class CLI < Thor
-    DOING_LINE = "# Doing"
-    TODO_LINE = "# ToDo"
-    DONE_LINE = "# Done"
+    DOING_LINE = "## Doing"
+    TODO_LINE = "## ToDo"
+    DONE_LINE = "## Done"
     BLANK_LIST = DOING_LINE+ "\n\n" + TODO_LINE + "\n\n" + DONE_LINE
     FILE_LOCATION = "doing.markdown"
 
@@ -38,15 +38,15 @@ module Doing
       inc = false
       contents.each_line do |line|
         if inc && line.include?("\n")
-          if line.include?("# ")
+          if line.include?("## ")
             break
           else
             arr << line
           end
         end
 
-        inc = true if line.downcase.include? "# #{which}".downcase
-      end # each line of file
+        inc = true if line.downcase.include? "## #{which}".downcase
+      end ## each line of file
 
       arr.reverse.drop(1).reverse.each do |line|
         puts line.strip
@@ -61,7 +61,7 @@ module Doing
 
       contents.each_line do |line|
         tempfile << line
-        if line.downcase.include?("# ") && line.downcase.include?(where.downcase)
+        if line.downcase.include?("## ") && line.downcase.include?(where.downcase)
           tempfile << "  - #{item}\n"
         end
       end

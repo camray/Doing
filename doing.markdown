@@ -1,9 +1,6 @@
-# Doing
+## Doing
 
-# ToDo
-  - item
+## ToDo
   - item
 
-# Done
-  - item23
-  - item2
+## Done
