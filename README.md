@@ -1,10 +1,14 @@
 # Doing
 
-A simple command line per-project todo manager
+### A simple command line per-project todo manager
+
+Creates a `doing.markdown` file in your current directory. I use a file like this to quickly track tasks, I thought I'd like to have a more formal command line function for it. 
+
+Move is broken currently. And it will not search super directories for the `doing.markdown` file yet, but those are all things I'm hoping to do. 
 
 ## Installation
 
-gotta build it, not available on rubygems yet
+gotta build it the old fashioned way, not available on rubygems yet
 
 ## Usage
 
