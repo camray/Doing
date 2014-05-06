@@ -65,8 +65,8 @@ module Doing
       puts "Added item #{item} to list #{where}"
     end
 
-    desc "move [TO] [ITEM]", "move an item from one list to another"
-    def move(to, *item)
+    desc "remove [ITEM]", "remove an item from a list"
+    def remove (*item)
       item = item.join " "
       contents = get_file_contents
       found = false 
@@ -75,11 +75,18 @@ module Doing
           found = true
           next
         else
-          tempfile << line
+          newfile << line
         end
       end
 
-      add(to, item.split(" ")) if found
+      return found
+    end
+
+    desc "move [TO] [ITEM]", "move an item from one list to another"
+    def move(to, *item)
+      if remove (item)
+        add(to, item.split(" "))
+      end
     end
 
     private
