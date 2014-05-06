@@ -1,4 +1,5 @@
 require 'thor'
+require 'fileutils'
 
 module Doing
   class CLI < Thor
@@ -53,9 +54,8 @@ module Doing
 
     desc "add [WHERE] [ITEM]", "Add an ITEM to a list"
     def add(where, *item)
-      item = item.join " "
-      create unless file_exists
-      contents = get_file_contents
+      item = item.join(" ")
+
       overwrite_file do |line, newfile|
         newfile << line
         if line.downcase.include?("## ") && line.downcase.include?(where.downcase)
@@ -68,7 +68,6 @@ module Doing
     desc "remove [ITEM]", "remove an item from a list"
     def remove (*item)
       item = item.join " "
-      contents = get_file_contents
       found = false 
       overwrite_file do |line, newfile|
         if line.downcase.strip == "- " + item.downcase
@@ -84,8 +83,10 @@ module Doing
 
     desc "move [TO] [ITEM]", "move an item from one list to another"
     def move(to, *item)
+      item = item.join " "
       if remove (item)
-        add(to, item.split(" "))
+        puts item
+        add(to, item)
       end
     end
 
@@ -103,8 +104,9 @@ module Doing
     def overwrite_file
       newfile = File.open("file.tmp", 'w')
       contents = get_file_contents
-      contents.each_line do |oldline|
-        yield oldline, newfile
+      contents.each_line do |line|
+        puts "block" if block_given?
+        yield(line, newfile)
       end
       FileUtils.mv("file.tmp", FILE_LOCATION)
     end
