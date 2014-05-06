@@ -21,7 +21,7 @@ module Doing
     def reset
       f = File.new(FILE_LOCATION, 'w')
       f.puts BLANK_LIST
-      puts "Blank doing file added at #{Dir.pwd}/#{FILE_LOCATION}"
+      puts "Created new todo file at #{Dir.pwd}/#{FILE_LOCATION}"
     end
 
     desc "list [WHICH]", "Lists the tasks for each section, or all if empty"
@@ -48,25 +48,38 @@ module Doing
         inc = true if line.downcase.include? "## #{which}".downcase
       end ## each line of file
 
-      arr.reverse.drop(1).reverse.each do |line|
-        puts line.strip
-      end
+      puts arr.reverse.drop(1).reverse.join("\n")
     end
 
     desc "add [WHERE] [ITEM]", "Add an ITEM to a list"
-    def add(where, item)
+    def add(where, *item)
+      item = item.join " "
       create unless file_exists
       contents = get_file_contents
-      tempfile=File.open("file.tmp", 'w')
-
-      contents.each_line do |line|
-        tempfile << line
+      overwrite_file do |line, newfile|
+        newfile << line
         if line.downcase.include?("## ") && line.downcase.include?(where.downcase)
-          tempfile << "  - #{item}\n"
+          newfile << "  - #{item}\n"
+        end
+      end
+      puts "Added item #{item} to list #{where}"
+    end
+
+    desc "move [TO] [ITEM]", "move an item from one list to another"
+    def move(to, *item)
+      item = item.join " "
+      contents = get_file_contents
+      found = false 
+      overwrite_file do |line, newfile|
+        if line.downcase.strip == "- " + item.downcase
+          found = true
+          next
+        else
+          tempfile << line
         end
       end
 
-      FileUtils.mv("file.tmp", FILE_LOCATION)
+      add(to, item.split(" ")) if found
     end
 
     private
@@ -78,6 +91,15 @@ module Doing
 
     def file_exists
       File.exists?(FILE_LOCATION)
+    end
+
+    def overwrite_file
+      newfile = File.open("file.tmp", 'w')
+      contents = get_file_contents
+      contents.each_line do |oldline|
+        yield oldline, newfile
+      end
+      FileUtils.mv("file.tmp", FILE_LOCATION)
     end
 
   end
